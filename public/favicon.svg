@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Dark serif letter A with golden angel halo on white rounded square">
+  <title>Angel A favicon</title>
+  <rect x="0" y="0" width="128" height="128" rx="22" ry="22" fill="#ffffff"/>
+  <ellipse cx="64" cy="20" rx="30" ry="8" fill="none" stroke="#d97706" stroke-width="5.5"/>
+  <path fill="#202124" d="M61.5 37.5 Q64 32 66.5 37.5 L100 108 Q102 112 109 113 L109 116 L78 116 L78 113 Q85 112 82 105 L74.5 88 L49 88 L41.5 105 Q38.5 112 46 113 L46 116 L19 116 L19 113 Q26 112 29 105 Z M52.5 80 L71 80 L61.8 56 Z" fill-rule="evenodd"/>
+</svg>

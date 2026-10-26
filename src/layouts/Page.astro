@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import type { Language } from '../lib/posts';
+
+interface Props {
+  title: string;
+  description?: string;
+  language?: Language;
+  alternates?: { language: Language; href: string }[];
+  published?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = 'Notes on data, code, and things learned along the way. A blog by Vinícius Anjos.',
+  language = 'en-US',
+  alternates = [],
+  published,
+  noindex = false,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const portuguese = language === 'pt-BR';
+---
+
+<!doctype html>
+<html lang={language} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fafafa" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={published ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={language.replace('-', '_')} />
+    {published && <meta property="article:published_time" content={`${published}T00:00:00Z`} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {alternates.map(({ language: locale, href }) => (
+      <link rel="alternate" hreflang={locale} href={new URL(href, Astro.site)} />
+    ))}
+    <script is:inline>
+      try {
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark';
+          document.querySelector('meta[name="theme-color"]').content = '#232136';
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{portuguese ? 'Pular para o conteúdo' : 'Skip to content'}</a>
+    <button
+      class="theme-toggle"
+      type="button"
+      aria-label={portuguese ? 'Ativar modo escuro' : 'Switch to dark mode'}
+      aria-pressed="false"
+      title={portuguese ? 'Ativar modo escuro' : 'Switch to dark mode'}
+      hidden
+    >
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12.5 2.5C6.8 2.5 2 7.2 2 12.8C2 18.4 6.5 22 12 22C16.4 22 20 19.2 21.5 15.5C17.6 18.6 12.5 18 9.5 14.5C6.2 10.6 7.4 5.7 12.5 2.5Z" />
+      </svg>
+    </button>
+    <main id="main" class="page" tabindex="-1">
+      <slot />
+    </main>
+    <script>
+      const root = document.documentElement;
+      const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+
+      if (toggle && themeColor) {
+        const button = toggle;
+        const color = themeColor;
+        function updateTheme(theme: string) {
+          const dark = theme === 'dark';
+          root.dataset.theme = theme;
+          const label = root.lang === 'pt-BR'
+            ? `Ativar modo ${dark ? 'claro' : 'escuro'}`
+            : `Switch to ${dark ? 'light' : 'dark'} mode`;
+          button.setAttribute('aria-pressed', String(dark));
+          button.setAttribute('aria-label', label);
+          button.title = label;
+          color.content = dark ? '#232136' : '#fafafa';
+        }
+        updateTheme(root.dataset.theme ?? 'light');
+        button.hidden = false;
+        button.addEventListener('click', () => {
+          const theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+          updateTheme(theme);
+          try { localStorage.setItem('theme', theme); } catch {}
+        });
+      }
+    </script>
+  </body>
+</html>

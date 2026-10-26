@@ -1,0 +1,36 @@
+---
+import Page from '../layouts/Page.astro';
+import { getPosts } from '../lib/content';
+import { formatDate, postUrl } from '../lib/posts';
+
+const posts = await getPosts();
+const years = [...new Set(posts.map((post) => post.year))];
+---
+
+<Page title="Blog — Vinícius Anjos">
+  <header class="intro">
+    <p class="eyebrow intro-label">Blog</p>
+    <h1>Vinícius Anjos<span class="period">.</span></h1>
+    <p class="tagline">Notes on data, code, and things learned along the way.</p>
+    <nav class="profile-link" aria-label="About the author">
+      <a href="https://anjos.dev">About me <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <section class="archive" aria-label="Posts">
+    {years.map((year) => (
+      <section class="year-group" aria-labelledby={`year-${year}`}>
+        <h2 id={`year-${year}`} class="eyebrow">{year}</h2>
+        <ul class="post-list">
+          {posts.filter((post) => post.year === year).map((post) => (
+            <li class="post-row">
+              <a href={postUrl(post.path)}>{post.english.data.title}</a>
+              <time class="date" datetime={post.date}>{formatDate(post.date)}</time>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    {posts.length === 0 && <p class="empty-state">Nothing here yet. A first post is on its way.</p>}
+  </section>
+</Page>

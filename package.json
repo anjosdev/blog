@@ -1,0 +1,26 @@
+{
+  "name": "anjos-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.14.0 <25"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test tests/posts.test.ts",
+    "test:site": "playwright test"
+  },
+  "dependencies": {
+    "astro": "7.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@playwright/test": "1.64.1",
+    "@types/node": "^24.19.2",
+    "typescript": "~5.9.3"
+  }
+}

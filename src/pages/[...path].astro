@@ -1,0 +1,71 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import { getPosts } from '../lib/content';
+import { formatDate, postUrl, type Language, type Post } from '../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.flatMap((post) => {
+    const pages = [{
+      params: { path: post.path },
+      props: { post, entry: post.english, language: 'en-US' as Language },
+    }];
+    if (post.portuguese) {
+      pages.push({
+        params: { path: `${post.path}/pt-br` },
+        props: { post, entry: post.portuguese, language: 'pt-BR' },
+      });
+    }
+    return pages;
+  });
+}
+
+interface Props {
+  post: Post<CollectionEntry<'posts'>>;
+  entry: CollectionEntry<'posts'>;
+  language: Language;
+}
+
+const { post, entry, language } = Astro.props;
+const { Content } = await render(entry);
+const portuguese = language === 'pt-BR';
+const alternates = post.portuguese ? [
+  { language: 'en-US' as const, href: postUrl(post.path) },
+  { language: 'pt-BR' as const, href: postUrl(post.path, 'pt-BR') },
+] : [];
+---
+
+<Page
+  title={`${entry.data.title} — Vinícius Anjos`}
+  description={entry.data.description ?? entry.data.title}
+  language={language}
+  published={post.date}
+  alternates={alternates}
+>
+  <nav class="back-link" aria-label={portuguese ? 'Navegação' : 'Navigation'}>
+    <a href="/" lang="en-US"><span aria-hidden="true">←</span> Vinícius Anjos<span class="period">.</span> / Blog</a>
+  </nav>
+  <article>
+    <header class="article-header">
+      <div class="article-meta">
+        <time class="date" datetime={post.date}>{formatDate(post.date, language)}</time>
+        {post.portuguese && (
+          <nav class="language-switch" aria-label={portuguese ? 'Idioma do artigo' : 'Article language'}>
+            {alternates.map(({ language: locale, href }) => (
+              <a href={href} lang={locale} hreflang={locale} aria-current={language === locale ? 'page' : undefined}>
+                {locale.toUpperCase()}
+              </a>
+            ))}
+          </nav>
+        )}
+      </div>
+      <h1>{entry.data.title}</h1>
+    </header>
+    <div class="prose"><Content /></div>
+  </article>
+  <footer class="article-footer">
+    <a href="/">{portuguese ? '← Voltar ao blog' : '← Back to the blog'}</a>
+  </footer>
+</Page>
