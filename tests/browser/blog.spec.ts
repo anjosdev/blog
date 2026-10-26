@@ -5,7 +5,7 @@ const portuguese = `${english}pt-br/`;
 
 test('homepage lists each post once, newest first, and links to English', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle('Blog — Vinícius Anjos');
+  await expect(page).toHaveTitle('Blog • Vinícius Anjos');
   await expect(page.locator('.post-list a')).toHaveText(['My first post']);
   await expect(page.locator('.post-list a').first()).toHaveAttribute('href', english);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en-US');
